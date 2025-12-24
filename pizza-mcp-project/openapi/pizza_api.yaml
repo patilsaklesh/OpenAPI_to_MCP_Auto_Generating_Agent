@@ -1,0 +1,115 @@
+openapi: 3.0.0
+
+info:
+  title: Pizza API
+  version: 1.0.0
+  description: REST API for ordering and tracking pizzas
+
+servers:
+  - url: http://localhost:8000
+
+paths:
+  /menu:
+    get:
+      summary: Get pizza menu
+      operationId: getMenu
+      responses:
+        '200':
+          description: List of available pizzas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pizza'
+
+  /order:
+    post:
+      summary: Place a pizza order
+      operationId: placeOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+      responses:
+        '200':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+
+  /order/{order_id}:
+    get:
+      summary: Track an order
+      operationId: trackOrder
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatus'
+
+components:
+  schemas:
+    Pizza:
+      type: object
+      properties:
+        name:
+          type: string
+        size:
+          type: string
+        price:
+          type: number
+      required:
+        - name
+        - size
+        - price
+
+    OrderRequest:
+      type: object
+      properties:
+        pizza:
+          type: string
+        size:
+          type: string
+        quantity:
+          type: integer
+      required:
+        - pizza
+        - size
+        - quantity
+
+    OrderResponse:
+      type: object
+      properties:
+        order_id:
+          type: string
+        eta_minutes:
+          type: integer
+      required:
+        - order_id
+        - eta_minutes
+
+    OrderStatus:
+      type: object
+      properties:
+        order_id:
+          type: string
+        status:
+          type: string
+        eta_minutes:
+          type: integer
+      required:
+        - order_id
+        - status
+        - eta_minutes
