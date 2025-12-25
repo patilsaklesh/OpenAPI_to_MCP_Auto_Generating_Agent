@@ -5,12 +5,12 @@ This simulates an external MCP-enabled service (e.g., Google Calendar).
 Used by the Scheduling Agent to schedule pizza delivery reminders.
 """
 
-from mcp.server import MCPServer
+from mcp.server.fastmcp import FastMCP
 import datetime
 
-server = MCPServer()
+mcp = FastMCP("calendar-mcp")
 
-@server.tool()
+@mcp.tool()
 def createEvent(input: dict) -> dict:
     """
     Create a calendar event after a given number of minutes.
@@ -30,4 +30,4 @@ def createEvent(input: dict) -> dict:
 
 
 if __name__ == "__main__":
-    server.run()
+    mcp.run()

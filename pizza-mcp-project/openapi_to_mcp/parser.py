@@ -2,7 +2,7 @@ from pathlib import Path
 import yaml
 
 
-def load_openapi_spec(path: str) -> dict:
+def load_openapi_spec(path) -> dict:
     """
     Load an OpenAPI YAML file and return it as a Python dictionary.
     """
