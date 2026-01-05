@@ -15,18 +15,18 @@ def openapi_to_ir(openapi_spec: Dict) -> ServiceIR:
         for http_method, meta in methods.items():
             tool_name = meta.get("operationId")
             if not tool_name:
-                continue  # skip unnamed operations
+                continue 
 
             description = meta.get("summary", "")
 
-            # --- Input schema ---
+           
             input_schema = {}
             if "requestBody" in meta:
                 content = meta["requestBody"]["content"]
                 if "application/json" in content:
                     input_schema = content["application/json"]["schema"]
 
-            # --- Output schema ---
+            
             output_schema = {}
             responses = meta.get("responses", {})
             if "200" in responses:

@@ -1,30 +1,25 @@
-from mcp.client import MCPClient
-from .a2a_protocol import OrderConfirmedMessage
-
+from typing import Dict, Any
+from .a2a_protocol import OrderConfirmed, SchedulingComplete
 
 class SchedulingAgent:
-    def __init__(self, calendar_mcp_url: str):
-        self.calendar_client = MCPClient(calendar_mcp_url)
+    def __init__(self, calendar_mcp_client): 
+        self.calendar_client = calendar_mcp_client
 
-    def handle_message(self, message: OrderConfirmedMessage):
-        """
-        Handle messages from Ordering Agent.
-        """
-        if isinstance(message, OrderConfirmedMessage):
-            self._schedule_delivery(message)
-
-    def _schedule_delivery(self, message: OrderConfirmedMessage):
-        """
-        Uses external MCP server (calendar/reminder).
-        """
-        self.calendar_client.call_tool(
-            tool_name="createEvent",
-            input={
-                "title": f"Pizza Delivery ({message.order_id})",
-                "minutes_from_now": message.eta_minutes
-            }
+    def handle_order(self, order_msg: OrderConfirmed) -> SchedulingComplete:
+        """Handle incoming order and schedule delivery"""
+        
+       
+        event_title = f"Pizza Delivery - Order #{order_msg.order_id}"
+        
+        result = self.calendar_client.create_event(
+            title=event_title,
+            minutes_from_now=order_msg.eta_minutes
         )
-
-        print(
-            f"[SchedulingAgent] Delivery scheduled for order {message.order_id}"
+        
+      
+        return SchedulingComplete(
+            order_id=order_msg.order_id,
+            event_id=result.get("event_id", "unknown"),
+            scheduled_time=result.get("scheduled_time", "unknown"),
+            status="Delivery reminder scheduled successfully"
         )
